@@ -64,6 +64,10 @@ int main(int argc, char **argv)
 
     /* printf("full path is %s\n", full_path); */
     printf("%ld\t%s\n",  statbuf.st_size, file->d_name);
+    /* printf("mode is %d\n", statbuf.st_mode&S_IFDIR); */
+    if ((statbuf.st_mode&S_IFDIR) != 0) {
+      printf("<DIR>\n");
+    }
     /* printf("%s\n", file->d_name); */
     memset(full_path, 0, strlen(full_path));
     file = readdir(dir);
