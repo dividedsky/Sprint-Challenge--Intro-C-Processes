@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 /**
  * Main
@@ -16,7 +17,9 @@ int main(int argc, char **argv)
   char *dir_name = malloc(100);
   /* printf("%d args supplied\n", argc); */
   if (argc == 1) {
-    dir_name = ".";
+    /* dir_name = "."; */
+    getcwd(dir_name, 100);
+    printf("dir name is %s\n", dir_name);
   } else if (argc == 2) {
     dir_name = argv[1];
   } else {
@@ -39,22 +42,28 @@ int main(int argc, char **argv)
   }
 
   struct dirent *file;
+  struct stat statbuf;
 
+  char *full_path = malloc(100);
   // Repeatly read and print entries
   while ((file = readdir(dir)) != NULL) {
-    char *full_path = malloc(100);
-    full_path = strcat(full_path, file->d_name);
-    struct stat *statbuf = malloc(sizeof(struct stat));
+    if (argc == 1) {
+      full_path = strcat(dir_name, file->d_name);
+    }
+    else {
+      full_path = strcat(argv[1], "/");
+      full_path = strcat(full_path, file->d_name);
+    }
     /* printf("%d\n", stat(full_path, statbuf)); */
-    stat(full_path, statbuf);
-    printf("file size is %10ld\n", statbuf->st_size);
+    stat(full_path, &statbuf);
+    /* printf("file size is %10ld\n", statbuf.st_size); */
 
-    printf("full path is %s\n", full_path);
-    printf("file name is %s\n", file->d_name);
-    free(full_path);
-    free(statbuf);
+    /* printf("full path is %s\n", full_path); */
+    printf("%s\%10ld\n", file->d_name, statbuf.st_size);
     /* printf("%s\n", file->d_name); */
+    memset(full_path, 0, strlen(full_path));
   }
+    /* free(full_path); */
 
   // Close directory
   /* closedir(dir); */
