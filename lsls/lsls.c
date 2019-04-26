@@ -42,31 +42,37 @@ int main(int argc, char **argv)
   }
 
   struct dirent *file;
-  struct stat statbuf;
 
-  char *full_path = malloc(100);
   // Repeatly read and print entries
-  while ((file = readdir(dir)) != NULL) {
+  file = readdir(dir);
+  while (file) {
+    struct stat statbuf;
+    char full_path[512];
     if (argc == 1) {
-      full_path = strcat(dir_name, file->d_name);
+      /* full_path = strcat(dir_name, file->d_name); */
+      sprintf(full_path, "%s/%s", dir_name, file->d_name);
     }
     else {
-      full_path = strcat(argv[1], "/");
-      full_path = strcat(full_path, file->d_name);
+      /* full_path = strcat(argv[1], "/"); */
+      /* full_path = strcat(full_path, file->d_name); */
+      sprintf(full_path, "%s/%s", argv[1], file->d_name);
     }
     /* printf("%d\n", stat(full_path, statbuf)); */
+    /* printf("full path is %s\n", full_path); */
     stat(full_path, &statbuf);
     /* printf("file size is %10ld\n", statbuf.st_size); */
 
     /* printf("full path is %s\n", full_path); */
-    printf("%s\%10ld\n", file->d_name, statbuf.st_size);
+    printf("%ld\t%s\n",  statbuf.st_size, file->d_name);
     /* printf("%s\n", file->d_name); */
     memset(full_path, 0, strlen(full_path));
+    file = readdir(dir);
   }
     /* free(full_path); */
 
   // Close directory
-  /* closedir(dir); */
+  closedir(dir);
+  /* free(full_path); */
 
   return 0;
 }
