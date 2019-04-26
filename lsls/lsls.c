@@ -48,6 +48,7 @@ int main(int argc, char **argv)
   while (file) {
     struct stat statbuf;
     char full_path[512];
+    int is_dir;
     if (argc == 1) {
       /* full_path = strcat(dir_name, file->d_name); */
       sprintf(full_path, "%s/%s", dir_name, file->d_name);
@@ -60,14 +61,19 @@ int main(int argc, char **argv)
     /* printf("%d\n", stat(full_path, statbuf)); */
     /* printf("full path is %s\n", full_path); */
     stat(full_path, &statbuf);
+    /* if ((statbuf.st_mode&S_IFDIR) != 0) { */
+    /*   is_dir = 1; */
+    /* } */
+    is_dir = statbuf.st_mode&S_IFDIR;
     /* printf("file size is %10ld\n", statbuf.st_size); */
 
     /* printf("full path is %s\n", full_path); */
-    printf("%ld\t%s\n",  statbuf.st_size, file->d_name);
-    /* printf("mode is %d\n", statbuf.st_mode&S_IFDIR); */
-    if ((statbuf.st_mode&S_IFDIR) != 0) {
-      printf("<DIR>\n");
+    if (is_dir) {
+      printf("%-10s%s\n", "<DIR>", file->d_name);
+    } else {
+      printf("%-10ld%s\n",  statbuf.st_size, file->d_name);
     }
+    /* printf("mode is %d\n", statbuf.st_mode&S_IFDIR); */
     /* printf("%s\n", file->d_name); */
     memset(full_path, 0, strlen(full_path));
     file = readdir(dir);
